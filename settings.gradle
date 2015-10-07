@@ -1,0 +1,4 @@
+include 'launcher', 'wpi'
+
+project(":wpi").name = "rogue-wpi"
+project(":launcher").name = "rogue-launcher"

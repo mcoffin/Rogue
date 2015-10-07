@@ -1,0 +1,18 @@
+plugins {
+    id "scala"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def scalaVersion = "2.11"
+
+def wpiHome = System.getProperty("user.home") + "/wpilib/java/current"
+
+dependencies {
+    compile "org.scala-lang:scala-library:${scalaVersion}.+"
+    compile "org.osgi:org.osgi.core:4.3+"
+    compile files("${wpiHome}/lib/WPILib.jar")
+    compile files("${wpiHome}/lib/NetworkTables.jar")
+}

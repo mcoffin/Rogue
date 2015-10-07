@@ -1,0 +1,24 @@
+plugins {
+    id "application"
+    id "scala"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def scalaVersion = "2.11"
+
+dependencies {
+    compile "org.scala-lang:scala-library:${scalaVersion}.+"
+    compile "org.apache.felix:org.apache.felix.framework:5.2+"
+    compile "org.osgi:org.osgi.core:4.3+"
+}
+
+mainClassName = "mcoffin.rogue.Launcher"
+
+jar {
+    manifest {
+        attributes "Main-Class": mainClassName
+    }
+}
