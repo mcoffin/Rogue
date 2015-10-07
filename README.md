@@ -1,4 +1,5 @@
 # rogue
+[![Stories in Ready](https://badge.waffle.io/mcoffin/rogue.svg?label=ready&title=Ready)](http://waffle.io/mcoffin/rogue)
 
 `rogue` is a lightweight OSGi environment for the *FIRST* Robotics Competition.
 
