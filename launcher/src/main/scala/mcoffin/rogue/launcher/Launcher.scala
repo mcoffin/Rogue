@@ -1,5 +1,6 @@
-package mcoffin.rogue
+package mcoffin.rogue.launcher
 
+import java.util.Properties
 import java.util.ServiceLoader
 
 import org.osgi.framework.BundleException
@@ -7,13 +8,17 @@ import org.osgi.framework.launch.FrameworkFactory
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConversions._
+import scala.io.Source
 
 object Launcher extends App {
   lazy val logger = LoggerFactory.getLogger(Launcher.getClass())
 
-  def osgiConfig: java.util.Map[String, String] = {
-    val cfg: Map[String, String] = Map()
-    cfg
+  private[Launcher] def osgiProperties = {
+    val props = new Properties()
+    props.load(getClass.getResourceAsStream("osgi.properties"))
+    logger.debug("Loaded OSGi properties: " + props)
+    val pMap: scala.collection.mutable.Map[String, String] = props
+    pMap
   }
 
   def start(name: String) {
@@ -30,7 +35,7 @@ object Launcher extends App {
   }
 
   lazy val frameworkFactory = ServiceLoader.load(classOf[FrameworkFactory]).iterator.next
-  val framework = frameworkFactory.newFramework(osgiConfig)
+  val framework = frameworkFactory.newFramework(osgiProperties)
 
   framework.start()
 
