@@ -1,0 +1,4 @@
+bundles:
+  - file:lib/scala-library-2.11.7.jar
+  - ["file:lib/logback-classic-1.1.3.jar", "file:lib/logback-core-1.1.3.jar", "file:lib/slf4j-api-1.7.12.jar"]
+  - file:lib/org.apache.felix.fileinstall-3.5.0.jar

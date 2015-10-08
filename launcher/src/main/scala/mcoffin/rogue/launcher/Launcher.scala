@@ -8,9 +8,10 @@ import org.osgi.framework.BundleException
 import org.osgi.framework.launch.FrameworkFactory
 import org.osgi.framework.wiring.BundleRevision
 import org.slf4j.LoggerFactory
+import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.constructor.Constructor
 
 import scala.collection.JavaConversions._
-import scala.io.Source
 
 object Launcher extends App {
   implicit class RogueBundle(val internalBundle: Bundle) {
@@ -27,15 +28,26 @@ object Launcher extends App {
     pMap
   }
 
-  def startBundleURL(name: String) {
-    logger.info("Installing bundle at url \"" + name + "\"")
-    val b = context.installBundle(name)
+  val config = {
+    val yaml = new Yaml
+    yaml.load(getClass.getResourceAsStream("launcher.yml")).asInstanceOf[java.util.Map[String, Object]]
+  }
+
+  private[Launcher] def maybeStartBundle(b: Bundle) {
+    val name = b.getSymbolicName
     if (!b.isFragment) {
-        logger.info("Starting bundle at url \"" + name + "\"")
+        logger.debug("Starting bundle " + name)
         b.start()
     } else {
-      logger.debug("Bundle at url \"" + name + "\" is a fragment bundle.")
+      logger.debug("Bundle " + name + " is a fragment bundle.")
     }
+  }
+
+  def startBundleGroup(bundles: Iterable[String]) {
+    bundles.map(name => {
+      logger.debug("Installing bundle at url " + name + "")
+      context.installBundle(name)
+    }).foreach(maybeStartBundle)
   }
 
   lazy val frameworkFactory = ServiceLoader.load(classOf[FrameworkFactory]).iterator.next
@@ -44,5 +56,14 @@ object Launcher extends App {
   framework.start()
 
   val context = framework.getBundleContext()
-  args.foreach(startBundleURL(_))
+  config.get("bundles").asInstanceOf[java.util.List[Object]].foreach(cfg => {
+    startBundleGroup(cfg match {
+      case l: java.util.List[_] => {
+        logger.debug("Installing bundle group " + l)
+        l.map(x => x.asInstanceOf[String])
+      }
+      case url: String => Seq(url)
+      case _ => throw new IllegalArgumentException("Invalid bundle group configuration")
+    })
+  })
 }
