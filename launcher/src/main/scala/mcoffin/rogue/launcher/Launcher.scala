@@ -45,7 +45,7 @@ object Launcher extends App {
 
   def startBundleGroup(bundles: Iterable[String]) {
     bundles.map(name => {
-      logger.debug("Installing bundle at url " + name + "")
+      logger.debug("Installing bundle " + name + "")
       context.installBundle(name)
     }).foreach(maybeStartBundle)
   }
