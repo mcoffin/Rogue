@@ -8,6 +8,8 @@ repositories {
 }
 
 def scalaVersion = "2.11"
+def logbackVersion = "1.1+"
+def osgiVersion = "4.3+"
 
 dependencies {
     def wpiDir = System.getProperty("user.home") + "/wpilib/java/current"
@@ -15,12 +17,12 @@ dependencies {
     compile "org.scala-lang:scala-library:${scalaVersion}.+"
     compile "org.yaml:snakeyaml:1.5+"
     compile "org.apache.felix:org.apache.felix.framework:5.2+"
-    compile "org.osgi:org.osgi.core:4.3+"
+    compile "org.osgi:org.osgi.core:${osgiVersion}"
     compile "org.slf4j:slf4j-api:1.7+"
-    compile "ch.qos.logback:logback-core:1.1+"
-    compile "ch.qos.logback:logback-classic:1.1+"
+    compile "ch.qos.logback:logback-core:${logbackVersion}"
+    compile "ch.qos.logback:logback-classic:${logbackVersion}"
 
-    runtime "org.osgi:org.osgi.compendium:4.3+"
+    runtime "org.osgi:org.osgi.compendium:${osgiVersion}"
     runtime "org.ops4j.pax.url:pax-url-wrap:2.4+"
     runtime "org.ops4j.pax.url:pax-url-aether:2.4+"
     runtime "org.apache.felix:org.apache.felix.fileinstall:3.5+"

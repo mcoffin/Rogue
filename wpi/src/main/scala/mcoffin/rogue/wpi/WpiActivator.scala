@@ -1,10 +1,13 @@
 package mcoffin.rogue.wpi
 
+import com.google.inject.Guice
+
 import edu.wpi.first.wpilibj.RobotBase
 
 import java.io.BufferedWriter
 import java.io.FileWriter
 
+import org.ops4j.peaberry.Peaberry
 import org.osgi.framework.BundleActivator
 import org.osgi.framework.BundleContext
 
@@ -54,7 +57,12 @@ object WPILib {
 }
 
 case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
-  lazy val robotBase = robotClass.newInstance().asInstanceOf[RobotBase]
+  var bundleContext: BundleContext = null
+
+  lazy val robotBase = {
+    val injector = Guice.createInjector(Peaberry.osgiModule(bundleContext))
+    injector.getInstance(robotClass).asInstanceOf[RobotBase]
+  }
 
   private[wpi] def prestart() {
     // Because the prestart() method in robot base is protected...
@@ -69,6 +77,8 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
   }
 
   override def start(ctx: BundleContext) {
+    bundleContext = ctx
+
     WPILib.initializeHardwareConfiguration()
     prestart()
 
