@@ -1,11 +1,15 @@
 package mcoffin.rogue.wpi
 
 import com.google.inject.Guice
+import com.google.inject.util.Modules
 
 import edu.wpi.first.wpilibj.RobotBase
 
 import java.io.BufferedWriter
 import java.io.FileWriter
+
+import mcoffin.rogue.RogueModule
+import mcoffin.rogue.util.InjectUtils
 
 import org.ops4j.peaberry.Peaberry
 import org.osgi.framework.BundleActivator
@@ -60,7 +64,8 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
   var bundleContext: BundleContext = null
 
   lazy val robotBase = {
-    val injector = Guice.createInjector(Peaberry.osgiModule(bundleContext))
+    val module = InjectUtils.createChainedOverrideModule(Array(new RogueModule(bundleContext)), Array(Peaberry.osgiModule(bundleContext)))
+    val injector = Guice.createInjector(module)
     injector.getInstance(robotClass).asInstanceOf[RobotBase]
   }
 
@@ -79,10 +84,10 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
   override def start(ctx: BundleContext) {
     bundleContext = ctx
 
-    WPILib.initializeHardwareConfiguration()
+    //WPILib.initializeHardwareConfiguration()
     prestart()
 
-    WPILib.writeWPILibVersion()
+    //WPILib.writeWPILibVersion()
 
     // Finally, run the competition loop
     thread.start()
