@@ -1,6 +1,8 @@
 package mcoffin.rogue
 
 import com.google.inject.AbstractModule
+import com.google.inject.Provider
+
 import net.codingwell.scalaguice.ScalaModule
 
 import org.osgi.framework.BundleContext
@@ -10,6 +12,17 @@ import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceEvent
 
 import scala.reflect.Manifest
+
+class OSGIServiceProvider (
+  val bundleContext: BundleContext,
+  val className: String
+) extends Provider[Object] {
+  private[OSGIServiceProvider] def serviceReference = {
+    bundleContext.getServiceReference(className)
+  }
+
+  override def get = bundleContext.getService(serviceReference).asInstanceOf[Object]
+}
 
 class RogueModule (val bundleContext: BundleContext) extends AbstractModule with ScalaModule with ServiceListener {
   val boundClasses = scala.collection.mutable.Buffer[String]()
@@ -24,7 +37,7 @@ class RogueModule (val bundleContext: BundleContext) extends AbstractModule with
         boundClasses += srClassName
         srClass match {
           case clazz: Class[Object] => {
-            bind(clazz).toInstance(impl.asInstanceOf[Object])
+            bind(clazz).toProvider(new OSGIServiceProvider(bundleContext, srClassName))
           }
           case _ => throw new Exception("Illegal service registration not of type Object")
         }
