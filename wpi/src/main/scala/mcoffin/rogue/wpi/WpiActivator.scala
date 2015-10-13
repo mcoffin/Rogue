@@ -69,12 +69,27 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
     injector.getInstance(robotClass).asInstanceOf[RobotBase]
   }
 
-  private[wpi] def prestart() {
+  private[wpi] def prestart {
+    prestart(robotClass)
+  }
+
+  private[wpi] def prestart(runner: Class[_]) {
     // Because the prestart() method in robot base is protected...
     // for... reasons
-    val prestartMethod = classOf[RobotBase].getDeclaredMethod("prestart") // TODO: Traverse class hierarchy from robotClass instead of starting at RobotBase
-    prestartMethod.setAccessible(true)
-    prestartMethod.invoke(robotBase);
+    try {
+      val prestartMethod = runner.getDeclaredMethod("prestart") // TODO: Traverse class hierarchy from robotClass instead of starting at RobotBase
+      prestartMethod.setAccessible(true)
+      prestartMethod.invoke(robotBase);
+    } catch {
+      case e: NoSuchMethodException => {
+        val newRunner = runner.getSuperclass
+        if (newRunner != null) {
+          prestart(newRunner)
+        } else {
+          throw new RuntimeException("Could not find prestart() method in robot class hierarchy")
+        }
+      }
+    }
   }
 
   lazy val thread = new Thread() {
@@ -85,7 +100,7 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
     bundleContext = ctx
 
     //WPILib.initializeHardwareConfiguration()
-    prestart()
+    prestart
 
     //WPILib.writeWPILibVersion()
 
