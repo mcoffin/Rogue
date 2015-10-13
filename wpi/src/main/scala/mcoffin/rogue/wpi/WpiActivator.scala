@@ -99,10 +99,10 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
   override def start(ctx: BundleContext) {
     bundleContext = ctx
 
-    //WPILib.initializeHardwareConfiguration()
+    WPILib.initializeHardwareConfiguration()
     prestart
 
-    //WPILib.writeWPILibVersion()
+    WPILib.writeWPILibVersion()
 
     // Finally, run the competition loop
     thread.start()

@@ -7,7 +7,6 @@ import net.codingwell.scalaguice.ScalaModule
 
 import org.osgi.framework.BundleContext
 import org.osgi.framework.Constants
-import org.osgi.framework.ServiceListener
 import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceEvent
 
@@ -24,7 +23,7 @@ class OSGIServiceProvider (
   override def get = bundleContext.getService(serviceReference).asInstanceOf[Object]
 }
 
-class RogueModule (val bundleContext: BundleContext) extends AbstractModule with ScalaModule with ServiceListener {
+class RogueModule (val bundleContext: BundleContext) extends AbstractModule with ScalaModule {
   val boundClasses = scala.collection.mutable.Buffer[String]()
 
   private[RogueModule] def bindServiceReference(sr: ServiceReference[_]) {
@@ -46,13 +45,6 @@ class RogueModule (val bundleContext: BundleContext) extends AbstractModule with
   }
 
   override def configure {
-    bundleContext.addServiceListener(this)
     bundleContext.getAllServiceReferences(null, null).foreach(sr => bindServiceReference(sr))
-  }
-
-  override def serviceChanged(evt: ServiceEvent) {
-    if (evt.getType != ServiceEvent.UNREGISTERING) {
-      bindServiceReference(evt.getServiceReference)
-    }
   }
 }
