@@ -1,0 +1,13 @@
+buildscript {
+    repositories {
+        maven {
+            name = "GradleRIO"
+            url = "http://dev.imjac.in/maven"
+        }
+    }
+    dependencies {
+        classpath group: 'jaci.openrio.gradle', name: 'GradleRIO', version: '+'
+    }
+}
+
+apply plugin: 'GradleRIO'
