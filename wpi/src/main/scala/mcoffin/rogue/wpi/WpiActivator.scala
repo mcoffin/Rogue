@@ -22,6 +22,12 @@ import org.osgi.framework.BundleContext
 object WPILib {
   var initialized = false;
 
+  private[WPILib] def initializeNetworkTable {
+    NetworkTable.setServerMode()
+    NetworkTable.getTable("")
+    NetworkTable.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", false)
+  }
+
   /**
    * Initializes the NI FPGA ensuring to only do it once,
    * and preventing against race conditions
@@ -33,6 +39,7 @@ object WPILib {
 
     WPILib.synchronized {
       if (!initialized) {
+        initializeNetworkTable
         RobotBase.initializeHardwareConfiguration()
         initialized = true
       }
