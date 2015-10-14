@@ -4,3 +4,5 @@ jdk:
 language: java
 install:
   - ./gradlew wpi
+after_success:
+  - ./gradlew aggregateScoverage coveralls

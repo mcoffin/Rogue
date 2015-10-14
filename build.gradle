@@ -1,17 +1,47 @@
 buildscript {
     repositories {
+        mavenCentral()
         maven {
             name = "GradleRIO"
             url = "http://dev.imjac.in/maven"
         }
+        jcenter()
     }
     dependencies {
         classpath group: 'jaci.openrio.gradle', name: 'GradleRIO', version: '+'
+        classpath group: 'org.scoverage', name: 'gradle-scoverage', version: '1+'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2+'
     }
 }
 
 allprojects {
+    def scoverageVersion = "1.1+"
+    def scalaVersion = "2.11"
+
     apply plugin: 'GradleRIO'
+    apply plugin: 'scoverage'
+
+    dependencies {
+        scoverage "org.scoverage:scalac-scoverage-runtime_${scalaVersion}:${scoverageVersion}"
+        scoverage "org.scoverage:scalac-scoverage-plugin_${scalaVersion}:${scoverageVersion}"
+    }
 }
 
-apply plugin: 'GradleRIO'
+apply plugin: 'com.github.kt3k.coveralls'
+
+task aggregateScoverage(type: org.scoverage.ScoverageAggregate) {
+    subprojects.each {
+        dependsOn "${it.path}:reportScoverage"
+    }
+}
+
+def coverageReportPath = "${buildDir}/scoverage-aggregate/cobertura.xml".toString()
+
+coveralls {
+    def sourceDirStrings = new ArrayList()
+    subprojects.sourceSets.main.allSource.srcDirs.each {
+        sourceDirStrings.add(it.toString())
+    }
+    sourceDirs = sourceDirStrings.flatten()
+    coberturaReportPath = coverageReportPath
+}
