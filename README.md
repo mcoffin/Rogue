@@ -1,5 +1,6 @@
 # rogue
 [![Build Status](https://travis-ci.org/mcoffin/rogue.svg?branch=master)](https://travis-ci.org/mcoffin/rogue)
+[![Coverage Status](https://coveralls.io/repos/mcoffin/rogue/badge.svg?branch=master&service=github)](https://coveralls.io/github/mcoffin/rogue?branch=master)
 [![Stories in Ready](https://badge.waffle.io/mcoffin/rogue.svg?label=ready&title=Ready)](http://waffle.io/mcoffin/rogue)
 
 `rogue` is a lightweight OSGi environment for the *FIRST* Robotics Competition.
