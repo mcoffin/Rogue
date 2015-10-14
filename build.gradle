@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 buildscript {
     repositories {
         mavenCentral()
@@ -40,7 +42,12 @@ def coverageReportPath = "${buildDir}/scoverage-aggregate/cobertura.xml".toStrin
 coveralls {
     def sourceDirStrings = new ArrayList()
     subprojects.sourceSets.main.allSource.srcDirs.each {
-        sourceDirStrings.add(it.toString())
+        it.each {
+            java.nio.file.Path absPath = Paths.get(it.toString())
+            java.nio.file.Path basePath = Paths.get(System.getProperty("user.dir"))
+            java.nio.file.Path relPath = basePath.relativize(absPath)
+            sourceDirStrings.add(relPath.toString())
+        }
     }
     sourceDirs = sourceDirStrings.flatten()
     coberturaReportPath = coverageReportPath
