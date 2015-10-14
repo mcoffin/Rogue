@@ -10,4 +10,8 @@ buildscript {
     }
 }
 
+allprojects {
+    apply plugin: 'GradleRIO'
+}
+
 apply plugin: 'GradleRIO'

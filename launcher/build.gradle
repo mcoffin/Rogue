@@ -27,8 +27,8 @@ dependencies {
     runtime "org.ops4j.pax.url:pax-url-aether:2.4+"
     runtime "org.apache.felix:org.apache.felix.fileinstall:3.5+"
     runtime project(":rogue-wpi")
-    runtime files("${wpiDir}/lib/WPILib.jar")
-    runtime files("${wpiDir}/lib/NetworkTables.jar")
+    //runtime files("${wpiDir}/lib/WPILib.jar")
+    //runtime files("${wpiDir}/lib/NetworkTables.jar")
 }
 
 mainClassName = "mcoffin.rogue.launcher.Launcher"

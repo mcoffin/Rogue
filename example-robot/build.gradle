@@ -20,8 +20,8 @@ dependencies {
     compile "com.google.inject:guice:${guiceVersion}"
     compile project(":rogue-wpi")
 
-    compile files("${wpiHome}/lib/WPILib.jar")
-    compile files("${wpiHome}/lib/NetworkTables.jar")
+    //compile files("${wpiHome}/lib/WPILib.jar")
+    //compile files("${wpiHome}/lib/NetworkTables.jar")
 }
 
 jar {
