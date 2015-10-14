@@ -1,7 +1,6 @@
 sudo: false
 jdk:
   - oraclejdk8
-  - openjdk8
 language: java
 install:
   - ./gradlew wpi
