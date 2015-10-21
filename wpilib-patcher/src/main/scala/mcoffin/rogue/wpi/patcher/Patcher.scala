@@ -1,11 +1,17 @@
 package mcoffin.rogue.wpi.patcher
 
+import java.io.BufferedOutputStream
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 import java.nio.file.{Files, Paths}
 
 import java.net.URL
 import java.net.URLClassLoader
+
+import java.util.jar._
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -17,7 +23,7 @@ object Patcher extends App {
   val ROBOT_BASE_CLASS = "edu.wpi.first.wpilibj.RobotBase"
 
   implicit class RobotBaseClassNode(val classNode: ClassNode) {
-    private[RobotBaseClassNode] def constructorInstructions = {
+    lazy val constructorInstructions = {
       import org.objectweb.asm.Opcodes._
 
       val insnList = new InsnList
@@ -31,30 +37,36 @@ object Patcher extends App {
 
     def patchRobotBase {
       val methods = classNode.methods.map(m => m.asInstanceOf[MethodNode])
-      val initMethod = methods.filter(m => m.name.equals("<init>"))(0)
-      initMethod.instructions = constructorInstructions
+      val initMethods = methods.filter(m => m.name.equals("<init>"))
+      initMethods.foreach(initMethod => {
+        initMethod.instructions = constructorInstructions
+      })
     }
   }
 
+  private[Patcher] def jarFile = new File(args(0))
+
+  def pathForClassName(name: String) = {
+    val p = name.replace('.', '/')
+    s"${p}.class"
+  }
+  val classPath = pathForClassName(ROBOT_BASE_CLASS)
+
+  val classLoader = {
+    val jarURL = {
+      val f = jarFile
+      f.toURI.toURL
+    }
+    println(s"Loading jar: ${jarURL}")
+    new URLClassLoader(Array(jarURL))
+  }
+
+  private[Patcher] def classStream = classLoader.getResourceAsStream(classPath)
+
   val classNode = {
-    def pathForClassName(name: String) = {
-      val p = name.replace('.', '/')
-      s"${p}.class"
-    }
-
-    val classLoader = {
-      val jarURL = {
-        val f = new File(args(0))
-        f.toURI.toURL
-      }
-      println(s"Loading jar: ${jarURL}")
-      new URLClassLoader(Array(jarURL))
-    }
-
-    val classPath = pathForClassName(ROBOT_BASE_CLASS)
     println(s"Loading class at path: ${classPath}")
 
-    val classReader = new ClassReader(classLoader.getResourceAsStream(classPath))
+    val classReader = new ClassReader(classStream)
 
     val cn = new ClassNode
     classReader.accept(cn, 0)
@@ -71,7 +83,28 @@ object Patcher extends App {
 
   private[Patcher] def writeOutput {
     val bytes = classWriter.toByteArray()
-    Files.write(Paths.get("./RobotBase.class"), bytes)
+    val sourceJar = new JarFile(jarFile)
+    val jarOutputStream = {
+      val outputStream = new BufferedOutputStream(new FileOutputStream(args(1)))
+      val jos = new JarOutputStream(outputStream)
+      jos
+    }
+
+    def writeJarEntry(e: JarEntry, inputStream: InputStream) {
+      jarOutputStream.putNextEntry(e)
+      jarOutputStream.write(Stream.continually(inputStream.read()).takeWhile(_ != -1).map(_.toByte).toArray)
+      jarOutputStream.closeEntry
+    }
+
+    try {
+      sourceJar.entries.filter(e => !e.getName.equals(classPath)).foreach(e => writeJarEntry(e, sourceJar.getInputStream(e)))
+      val robotBaseEntry = new JarEntry(classPath)
+      writeJarEntry(robotBaseEntry, new ByteArrayInputStream(classWriter.toByteArray()))
+
+      jarOutputStream.flush()
+    } finally {
+      jarOutputStream.close()
+    }
   }
 
   writeOutput
