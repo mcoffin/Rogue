@@ -9,10 +9,32 @@ import java.net.URLClassLoader
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.tree.ClassNode
+import org.objectweb.asm.tree._
+
+import scala.collection.JavaConversions._
 
 object Patcher extends App {
   val ROBOT_BASE_CLASS = "edu.wpi.first.wpilibj.RobotBase"
+
+  implicit class RobotBaseClassNode(val classNode: ClassNode) {
+    private[RobotBaseClassNode] def constructorInstructions = {
+      import org.objectweb.asm.Opcodes._
+
+      val insnList = new InsnList
+      val instructions = Seq(
+        new VarInsnNode(ALOAD, 0),
+        new MethodInsnNode(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false),
+        new InsnNode(RETURN))
+      instructions.foreach(insnList.add(_))
+      insnList
+    }
+
+    def patchRobotBase {
+      val methods = classNode.methods.map(m => m.asInstanceOf[MethodNode])
+      val initMethod = methods.filter(m => m.name.equals("<init>"))(0)
+      initMethod.instructions = constructorInstructions
+    }
+  }
 
   val classNode = {
     def pathForClassName(name: String) = {
@@ -38,6 +60,8 @@ object Patcher extends App {
     classReader.accept(cn, 0)
     cn
   }
+
+  classNode.patchRobotBase
 
   val classWriter = {
     val cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES)
