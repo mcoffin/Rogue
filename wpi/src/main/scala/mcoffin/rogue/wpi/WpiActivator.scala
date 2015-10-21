@@ -4,6 +4,7 @@ import com.google.inject.Guice
 import com.google.inject.util.Modules
 
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.networktables.NetworkTable
 
 import java.io.BufferedWriter
 import java.io.FileWriter

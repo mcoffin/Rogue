@@ -11,6 +11,7 @@ import java.nio.file.{Files, Paths}
 import java.net.URL
 import java.net.URLClassLoader
 
+import java.util.LinkedList
 import java.util.jar._
 
 import org.objectweb.asm.ClassReader
@@ -36,10 +37,38 @@ object Patcher extends App {
     }
 
     def patchRobotBase {
+      implicit class FieldNodeExtension(val fn: FieldNode) {
+        def ensureVisibleAnnotations {
+          if (fn.visibleAnnotations == null) {
+            fn.visibleAnnotations = new LinkedList
+          }
+        }
+      }
+
       val methods = classNode.methods.map(m => m.asInstanceOf[MethodNode])
       val initMethods = methods.filter(m => m.name.equals("<init>"))
       initMethods.foreach(initMethod => {
         initMethod.instructions = constructorInstructions
+      })
+
+      val fields = classNode.fields.map(f => f.asInstanceOf[FieldNode])
+      val driverStationFields = fields.filter(f => f.desc.equals("Ledu/wpi/first/wpilibj/DriverStation;"))
+      driverStationFields.foreach(dsField => {
+        dsField.ensureVisibleAnnotations
+        val f  = dsField.asInstanceOf[FieldNode]
+
+        val newAnnotations: LinkedList[AnnotationNode] = new LinkedList
+        f.visibleAnnotations.map(a => a.asInstanceOf[AnnotationNode]).foreach(newAnnotations.add(_))
+        if (!newAnnotations.add(new AnnotationNode("Lcom/google/inject/Inject;"))) {
+          throw new RuntimeException(s"Unable to add annotation to field: ${dsField}!")
+        } else {
+          println(s"Added annotation to field: ${dsField}")
+        }
+
+        f.visibleAnnotations = newAnnotations
+      })
+      driverStationFields.foreach(dsField => {
+        dsField.visibleAnnotations.foreach(println(_))
       })
     }
   }
