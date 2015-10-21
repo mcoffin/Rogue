@@ -4,12 +4,14 @@ import com.google.inject.Guice
 import com.google.inject.util.Modules
 
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.networktables.NetworkTable
 
 import java.io.BufferedWriter
 import java.io.FileWriter
 
 import mcoffin.rogue.RogueModule
 import mcoffin.rogue.util.InjectUtils
+import mcoffin.rogue.wpi.inject.WPIModule
 
 import org.ops4j.peaberry.Peaberry
 import org.osgi.framework.BundleActivator
@@ -20,6 +22,12 @@ import org.osgi.framework.BundleContext
  */
 object WPILib {
   var initialized = false;
+
+  private[WPILib] def initializeNetworkTable {
+    NetworkTable.setServerMode()
+    NetworkTable.getTable("")
+    NetworkTable.getTable("LiveWindow").getSubTable("~STATUS~").putBoolean("LW Enabled", false)
+  }
 
   /**
    * Initializes the NI FPGA ensuring to only do it once,
@@ -32,6 +40,7 @@ object WPILib {
 
     WPILib.synchronized {
       if (!initialized) {
+        initializeNetworkTable
         RobotBase.initializeHardwareConfiguration()
         initialized = true
       }
@@ -64,7 +73,7 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
   var bundleContext: BundleContext = null
 
   lazy val robotBase = {
-    val module = InjectUtils.createChainedOverrideModule(Array(new RogueModule(bundleContext)), Array(Peaberry.osgiModule(bundleContext)))
+    val module = InjectUtils.createChainedOverrideModule(Array(new RogueModule(bundleContext)), Array(Peaberry.osgiModule(bundleContext), new WPIModule))
     val injector = Guice.createInjector(module)
     injector.getInstance(robotClass).asInstanceOf[RobotBase]
   }
