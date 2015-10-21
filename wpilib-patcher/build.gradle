@@ -1,0 +1,21 @@
+plugins {
+    id "java"
+    id "application"
+    id "scala"
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+def scalaVersion = "2.11"
+
+dependencies {
+    compile "org.scala-lang:scala-library:${scalaVersion}.+"
+    compile "org.ow2.asm:asm-all:5.0+"
+}
+
+mainClassName = "mcoffin.rogue.wpi.patcher.Patcher"
+
+run.args (System.getProperty("user.home") + "/wpilib/java/current/lib/WPILib.jar")
