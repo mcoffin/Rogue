@@ -10,6 +10,7 @@ import java.io.BufferedWriter
 import java.io.FileWriter
 
 import mcoffin.rogue.RogueModule
+import mcoffin.rogue.inject.Slf4jLoggerModule
 import mcoffin.rogue.util.InjectUtils
 import mcoffin.rogue.wpi.inject.WPIModule
 
@@ -73,7 +74,7 @@ case class WpiActivator(robotClass: Class[_]) extends BundleActivator {
   var bundleContext: BundleContext = null
 
   lazy val robotBase = {
-    val module = InjectUtils.createChainedOverrideModule(Array(new RogueModule(bundleContext)), Array(Peaberry.osgiModule(bundleContext), new WPIModule))
+    val module = InjectUtils.createChainedOverrideModule(Array(new RogueModule(bundleContext)), Array(Slf4jLoggerModule, Peaberry.osgiModule(bundleContext), new WPIModule))
     val injector = Guice.createInjector(module)
     injector.getInstance(robotClass).asInstanceOf[RobotBase]
   }
