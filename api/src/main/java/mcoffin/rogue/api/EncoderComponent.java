@@ -1,6 +1,6 @@
 package mcoffin.rogue.api;
 
-public interface EncoderDrive {
+public interface EncoderComponent {
   public double getEncoderPosition();
   public void resetEncoders();
 }
