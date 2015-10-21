@@ -23,21 +23,22 @@ object Slf4jLoggerModule extends AbstractModule with ScalaModule {
   }
 
   class Slf4jTypeListener extends TypeListener {
-    class TypeIterator[T](val typeLiteral: TypeLiteral[T]) extends Iterator[Class[_ >: T]] {
+    class TypeIterator[T](typeLiteral: TypeLiteral[T]) extends Iterator[Class[_ >: T]] {
       var runner = typeLiteral.getRawType
 
       override def hasNext = runner != classOf[Object]
 
       override def next() = {
+        val cache = runner
         runner = runner.getSuperclass()
-        runner
+        cache
       }
     }
 
     override def hear[T](typeLiteral: TypeLiteral[T], typeEncounter: TypeEncounter[T]) {
       val iter = new TypeIterator(typeLiteral)
       for (c <- iter) {
-        c.getDeclaredFields.filter(field => field.getType == classOf[Logger] && field.isAnnotationPresent(classOf[InjectLogger])).foreach(field => {
+        c.getDeclaredFields.filter(field => field.getType.equals(classOf[Logger]) && field.isAnnotationPresent(classOf[InjectLogger])).foreach(field => {
           typeEncounter.register(new Slf4jMembersInjector[T](field))
         })
       }
