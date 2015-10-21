@@ -20,7 +20,7 @@ object Launcher extends App {
 
   lazy val logger = LoggerFactory.getLogger(Launcher.getClass())
 
-  private[Launcher] def osgiProperties = {
+  private[launcher] def osgiProperties = {
     val props = new Properties()
     props.load(getClass.getResourceAsStream("osgi.properties"))
     logger.debug("Loaded OSGi properties: " + props)
@@ -28,7 +28,7 @@ object Launcher extends App {
     pMap
   }
 
-  val config = {
+  lazy val config = {
     val yaml = new Yaml
     yaml.load(getClass.getResourceAsStream("launcher.yml")).asInstanceOf[java.util.Map[String, Object]]
   }

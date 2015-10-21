@@ -29,6 +29,8 @@ dependencies {
     runtime project(":rogue-wpi")
     //runtime files("${wpiDir}/lib/WPILib.jar")
     //runtime files("${wpiDir}/lib/NetworkTables.jar")
+
+    testCompile "junit:junit:4.12+"
 }
 
 mainClassName = "mcoffin.rogue.launcher.Launcher"
