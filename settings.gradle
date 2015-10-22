@@ -1,6 +1,7 @@
-include 'wpi', 'example-robot', 'wpilib-patcher', 'wpilib', 'karaf'
+include 'wpi', 'example-robot', 'wpilib-patcher', 'wpilib', 'karaf', 'api'
 
 project(":wpi").name = "rogue-wpi"
 project(":example-robot").name = "rogue-example-robot"
 project(":wpilib-patcher").name = "rogue-wpilib-patcher"
 project(":karaf").name = "rogue-karaf"
+project(":api").name = "rogue-api"
