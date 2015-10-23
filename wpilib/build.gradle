@@ -14,6 +14,7 @@ def osgiVersion = "4.3+"
 
 dependencies {
     compile "org.osgi:org.osgi.core:${osgiVersion}"
+    compile "org.slf4j:slf4j-api:1.7+"
 }
 
 jar {
@@ -25,6 +26,7 @@ jar {
 shadowJar {
     dependencies {
         exclude(dependency('org.osgi:org.osgi.core'))
+        exclude(dependency('org.slf4j:slf4j-api'))
     }
 }
 

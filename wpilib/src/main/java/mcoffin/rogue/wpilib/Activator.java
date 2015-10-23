@@ -9,6 +9,8 @@ import java.io.IOException;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OSGi bundle activator for WPILib
@@ -18,6 +20,8 @@ public class Activator implements BundleActivator {
    * Version file to write the WPILib version to
    */
   private static final String WPILIB_VERSION_FILE = "/tmp/frc_versions/FRC_Lib_Version.ini";
+
+  private final Logger logger = LoggerFactory.getLogger(Activator.class);
 
   /**
    * Performs one-time initialization of NetworkTable
@@ -50,6 +54,8 @@ public class Activator implements BundleActivator {
     initializeNetworkTable();
     RobotBase.initializeHardwareConfiguration();
     writeWPILibVersion();
+
+    logger.debug("Initialized WPILib");
   }
 
   @Override
