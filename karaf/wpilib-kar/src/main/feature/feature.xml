@@ -19,7 +19,7 @@
 <features name="${project.artifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
 
     <feature name='wpilib' description='${project.name}' version='${project.version}' resolver="${resolver}">
-        <bundle>mvn:mcoffin.rogue/wpilib/${project.version}/jar/all-osgi</bundle>
+        <bundle>mvn:mcoffin.rogue/wpilib/${project.version}/jar/patched-all-osgi</bundle>
         <details>${project.description}</details>
     </feature>
 

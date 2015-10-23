@@ -64,8 +64,23 @@ task osgiShadowJar(type: Jar, dependsOn: 'unzipShadowJar') {
     }
 }
 
+def patcherProject = rootProject.project(":rogue-wpilib-patcher")
+def originalJar = osgiShadowJar.archivePath
+def patchedJar = "$buildDir/tmp/patchedOsgiShadowJar.jar"
+
+patcherProject.run.dependsOn osgiShadowJar
+patcherProject.run.args = ["$originalJar".toString(), patchedJar.toString()]
+
+task patchedOsgiShadowJar(type: Jar, dependsOn: patcherProject.run) {
+    from(zipTree(patchedJar))
+
+    manifest = osgiShadowJar.manifest
+
+    classifier = "patched-all-osgi"
+}
+
 artifacts {
-    archives osgiShadowJar
+    archives patchedOsgiShadowJar
 }
 
 class OsgiOverride {

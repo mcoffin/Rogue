@@ -17,5 +17,3 @@ dependencies {
 }
 
 mainClassName = "mcoffin.rogue.wpi.patcher.Patcher"
-
-run.args = [(System.getProperty("user.home") + "/wpilib/java/current/lib/WPILib.jar"), "WPILib-patched.jar"]
