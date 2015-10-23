@@ -23,3 +23,43 @@ shadowJar {
         exclude(dependency('org.osgi:org.osgi.core'))
     }
 }
+
+task unzipShadowJar(type: Copy, dependsOn: 'shadowJar') {
+    from(zipTree(shadowJar.archivePath.getPath())) {
+        include("**/*.class")
+    }
+    into("$buildDir/tmp/osgiShadowJar-classes".toString())
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.DefaultInheritManifest
+import org.gradle.api.internal.file.FileResolver
+
+task osgiShadowJar(type: Jar, dependsOn: 'unzipShadowJar') {
+    def mf = osgiManifest {
+        classesDir = new File("$buildDir/tmp/osgiShadowJar-classes".toString())
+        classpath = configurations.runtime
+    }
+
+    manifest = new DefaultInheritManifest(getServices().get(FileResolver.class))
+
+    manifest.inheritFrom jar.manifest
+    manifest.inheritFrom(mf) {
+        eachEntry {
+            if (OsgiOverride.OVERRIDE_KEYS.contains(it.getKey())) {
+                it.setValue(it.getMergeValue())
+            } else {
+                it.setValue(it.getBaseValue())
+            }
+        }
+    }
+
+    classifier = "all-osgi"
+
+    from(zipTree(project.shadowJar.archivePath.getPath())) {
+        exclude("META-INF/MANIFEST.MF")
+    }
+}
+
+class OsgiOverride {
+    static final OVERRIDE_KEYS = ["Export-Package", "Import-Package"]
+}
