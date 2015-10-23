@@ -1,6 +1,10 @@
 apply plugin: "java"
 apply plugin: "osgi"
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven'
+
+group = 'mcoffin.rogue'
+version = '0.1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -58,6 +62,10 @@ task osgiShadowJar(type: Jar, dependsOn: 'unzipShadowJar') {
     from(zipTree(project.shadowJar.archivePath.getPath())) {
         exclude("META-INF/MANIFEST.MF")
     }
+}
+
+artifacts {
+    archives osgiShadowJar
 }
 
 class OsgiOverride {
