@@ -29,17 +29,24 @@ class RogueModule (val bundleContext: BundleContext) extends AbstractModule with
   private[RogueModule] def bindServiceReference(sr: ServiceReference[_]) {
     val srClassNames = sr.getProperty(Constants.OBJECTCLASS).asInstanceOf[Array[String]]
     val impl = bundleContext.getService(sr)
-    val srClasses = srClassNames.map(Class.forName(_))
+    val srClasses = srClassNames.map(className => {
+      try {
+        val c = Class.forName(className)
+        Some(c)
+      } catch {
+        case e: ClassNotFoundException => None
+      }
+    }).collect {
+      maybeClass => maybeClass match {
+        case Some(c) => c
+      }
+    }
     for (srClass <- srClasses) {
       val srClassName = srClass.getCanonicalName
       if (!boundClasses.contains(srClassName)) {
         boundClasses += srClassName
-        srClass match {
-          case clazz: Class[Object] => {
-            bind(clazz).toProvider(new OSGIServiceProvider(bundleContext, srClassName))
-          }
-          case _ => throw new Exception("Illegal service registration not of type Object")
-        }
+        val clazz = srClass.asInstanceOf[Class[Object]]
+        bind(clazz).toProvider(new OSGIServiceProvider(bundleContext, srClassName))
       }
     }
   }

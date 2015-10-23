@@ -19,7 +19,7 @@
 <features name="${project.artifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
     <repository>mvn:mcoffin.rogue.features/guice/${project.version}/xml/features</repository>
 
-    <feature name='${project.artifactId}' description='${project.name}' version='${project.version}' resolver="${resolver}">
+    <feature name='${project.artifactId}' description='${project.name}' version='${project.version}'>
         <feature>guice</feature>
 	<bundle>mvn:org.scala-lang/scala-library/2.11.7</bundle>
 	<bundle>mvn:org.ops4j/peaberry/1.3</bundle>
