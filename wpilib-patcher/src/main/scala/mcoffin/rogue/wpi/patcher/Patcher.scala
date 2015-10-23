@@ -37,6 +37,8 @@ object Patcher extends App {
     }
 
     def patchRobotBase {
+      import org.objectweb.asm.Opcodes._
+
       implicit class FieldNodeExtension(val fn: FieldNode) {
         def ensureVisibleAnnotations {
           if (fn.visibleAnnotations == null) {
@@ -56,6 +58,8 @@ object Patcher extends App {
       driverStationFields.foreach(dsField => {
         dsField.ensureVisibleAnnotations
         val f  = dsField.asInstanceOf[FieldNode]
+
+        f.access = ACC_PUBLIC
 
         val newAnnotations: LinkedList[AnnotationNode] = new LinkedList
         f.visibleAnnotations.map(a => a.asInstanceOf[AnnotationNode]).foreach(newAnnotations.add(_))

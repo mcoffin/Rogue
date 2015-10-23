@@ -9,6 +9,7 @@ import org.osgi.framework.BundleContext
 import org.osgi.framework.Constants
 import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceEvent
+import org.slf4j.LoggerFactory
 
 import scala.reflect.Manifest
 
@@ -24,6 +25,8 @@ class OSGIServiceProvider (
 }
 
 class RogueModule (val bundleContext: BundleContext) extends AbstractModule with ScalaModule {
+  val logger = LoggerFactory.getLogger(classOf[RogueModule])
+
   val boundClasses = scala.collection.mutable.Buffer[String]()
 
   private[RogueModule] def bindServiceReference(sr: ServiceReference[_]) {
@@ -34,7 +37,10 @@ class RogueModule (val bundleContext: BundleContext) extends AbstractModule with
         val c = Class.forName(className)
         Some(c)
       } catch {
-        case e: ClassNotFoundException => None
+        case e: ClassNotFoundException => {
+          logger.warn("Exception while resolving OSGi service interface: " + e)
+          None
+        }
       }
     }).collect {
       maybeClass => maybeClass match {
