@@ -23,7 +23,7 @@
         <groupId>mcoffin.rogue</groupId>
         <artifactId>rogue</artifactId>
         <version>0.2.0-SNAPSHOT</version>
-	<relativePath>../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>mcoffin.rogue</groupId>
@@ -117,6 +117,20 @@
             <version>${project.version}</version>
             <type>kar</type>
         </dependency>
+        <dependency>
+            <groupId>mcoffin.rogue.features</groupId>
+            <artifactId>rogue-wpi</artifactId>
+            <version>${project.version}</version>
+            <type>kar</type>
+        </dependency>
+        <dependency>
+            <groupId>mcoffin.rogue.features</groupId>
+            <artifactId>guice</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -166,13 +180,16 @@
                 <configuration>
                     <installedFeatures>
                         <feature>wrapper</feature>
-			<feature>wpilib</feature>
+                        <feature>wpilib</feature>
+			<feature>rogue-wpi</feature>
                     </installedFeatures>
                     <bootFeatures>
                         <feature>config</feature>
                         <feature>log</feature>
                         <feature>system</feature>
                         <feature>deployer</feature>
+                        <feature>guice</feature>
+			<feature>wrap</feature>
                     </bootFeatures>
                 </configuration>
             </plugin>

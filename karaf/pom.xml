@@ -30,6 +30,8 @@
     <modules>
         <module>rogue-karaf</module>
         <module>wpilib-kar</module>
+        <module>guice</module>
+        <module>rogue-wpi</module>
     </modules>
 
 </project>
