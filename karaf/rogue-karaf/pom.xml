@@ -172,7 +172,6 @@
                         <feature>log</feature>
                         <feature>system</feature>
                         <feature>deployer</feature>
-                        <feature>wrap</feature>
                     </bootFeatures>
                 </configuration>
             </plugin>

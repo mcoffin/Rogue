@@ -1,0 +1,15 @@
+task installWPILibKar(type: Exec, dependsOn: ':wpilib:install') {
+    workingDir 'wpilib-kar'
+
+    commandLine 'mvn', 'install'
+}
+
+task dist(type: Exec, dependsOn: installWPILibKar) {
+    commandLine 'mvn', 'package'
+}
+
+task cleanMaven(type: Exec) {
+    commandLine 'mvn', 'clean'
+}
+
+clean.dependsOn cleanMaven
