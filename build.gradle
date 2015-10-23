@@ -53,3 +53,5 @@ coveralls {
     sourceDirs = sourceDirStrings.flatten()
     coberturaReportPath = coverageReportPath
 }
+
+build.dependsOn ":rogue-karaf:dist"

@@ -9,7 +9,7 @@
 
 ## Deploying
 
-Running a `gradle :rogue-karaf:dist` will build a distribution tarball that you can put on to your roboRIO.
+Running a `gradle :build` will build a distribution tarball that you can put on to your roboRIO. The tarballs will be found in the `karaf/rogue-karaf/target/` directory.
 
 ## Caveats
 
