@@ -1,0 +1,88 @@
+apply plugin: "java"
+apply plugin: "osgi"
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven'
+
+group = 'mcoffin.rogue'
+version = '0.2.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def osgiVersion = "4.3+"
+
+dependencies {
+    compile "org.osgi:org.osgi.core:${osgiVersion}"
+}
+
+jar {
+    manifest {
+        instruction 'Bundle-Activator', 'mcoffin.rogue.wpilib.Activator'
+    }
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency('org.osgi:org.osgi.core'))
+    }
+}
+
+task unzipShadowJar(type: Copy, dependsOn: 'shadowJar') {
+    from(zipTree(shadowJar.archivePath.getPath())) {
+        include("**/*.class")
+    }
+    into("$buildDir/tmp/osgiShadowJar-classes".toString())
+}
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.DefaultInheritManifest
+import org.gradle.api.internal.file.FileResolver
+
+task osgiShadowJar(type: Jar, dependsOn: 'unzipShadowJar') {
+    def mf = osgiManifest {
+        classesDir = new File("$buildDir/tmp/osgiShadowJar-classes".toString())
+        classpath = configurations.runtime
+    }
+
+    manifest = new DefaultInheritManifest(getServices().get(FileResolver.class))
+
+    manifest.inheritFrom jar.manifest
+    manifest.inheritFrom(mf) {
+        eachEntry {
+            if (OsgiOverride.OVERRIDE_KEYS.contains(it.getKey())) {
+                it.setValue(it.getMergeValue())
+            } else {
+                it.setValue(it.getBaseValue())
+            }
+        }
+    }
+
+    classifier = "all-osgi"
+
+    from(zipTree(project.shadowJar.archivePath.getPath())) {
+        exclude("META-INF/MANIFEST.MF")
+    }
+}
+
+def patcherProject = rootProject.project(":rogue-wpilib-patcher")
+def originalJar = osgiShadowJar.archivePath
+def patchedJar = "$buildDir/tmp/patchedOsgiShadowJar.jar"
+
+patcherProject.run.dependsOn osgiShadowJar
+patcherProject.run.args = ["$originalJar".toString(), patchedJar.toString()]
+
+task patchedOsgiShadowJar(type: Jar, dependsOn: patcherProject.run) {
+    from(zipTree(patchedJar))
+
+    manifest = osgiShadowJar.manifest
+
+    classifier = "patched-all-osgi"
+}
+
+artifacts {
+    archives patchedOsgiShadowJar
+}
+
+class OsgiOverride {
+    static final OVERRIDE_KEYS = ["Export-Package", "Import-Package"]
+}

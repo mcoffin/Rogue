@@ -13,6 +13,7 @@ buildscript {
         classpath group: 'jaci.openrio.gradle', name: 'GradleRIO', version: '+'
         classpath group: 'org.scoverage', name: 'gradle-scoverage', version: '1+'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2+'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2+'
     }
 }
 
@@ -52,3 +53,5 @@ coveralls {
     sourceDirs = sourceDirStrings.flatten()
     coberturaReportPath = coverageReportPath
 }
+
+build.dependsOn ":rogue-karaf:dist"

@@ -67,9 +67,6 @@ object Patcher extends App {
 
         f.visibleAnnotations = newAnnotations
       })
-      driverStationFields.foreach(dsField => {
-        dsField.visibleAnnotations.foreach(println(_))
-      })
     }
   }
 
