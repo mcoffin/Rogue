@@ -1,4 +1,4 @@
-include 'launcher', 'wpi', 'example-robot', 'wpilib-patcher'
+include 'launcher', 'wpi', 'example-robot', 'wpilib-patcher', 'wpilib'
 
 project(":wpi").name = "rogue-wpi"
 project(":launcher").name = "rogue-launcher"

@@ -1,0 +1,25 @@
+apply plugin: "java"
+apply plugin: "osgi"
+apply plugin: 'com.github.johnrengelman.shadow'
+
+repositories {
+    mavenCentral()
+}
+
+def osgiVersion = "4.3+"
+
+dependencies {
+    compile "org.osgi:org.osgi.core:${osgiVersion}"
+}
+
+jar {
+    manifest {
+        instruction 'Bundle-Activator', 'mcoffin.rogue.wpilib.Activator'
+    }
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency('org.osgi:org.osgi.core'))
+    }
+}
