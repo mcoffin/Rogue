@@ -7,9 +7,15 @@
 
 `rogue` is very much still a **work in progress**. Please treat it as such.
 
-## Features
+## Deploying
 
-Rogue includes a *Launcher* which bootstraps the [Apache Felix](http://felix.apache.org/) container runtime on the RoboRIO, and set of utilities in the *wpi* directory for interfacing WPILib robots with OSGi.
+Running a `gradle :build` will build a distribution tarball that you can put on to your roboRIO. The tarballs will be found in the `karaf/rogue-karaf/target/` directory.
+
+## Caveats
+
+When using Google Guice injection to receive your dependencies on other OSGI services, you'll need to use `Provider<T>` instead of `T` itself if you want to get the correct version of the dependency once the service changes behind the scenes (via a module hot-swap or something similar).
+
+If you want to keep an always-up-to-date version of an injected module **do not cache** the instance given to you by the provider. You must access the instance via the provider every time.
 
 ## Team Adoption
 

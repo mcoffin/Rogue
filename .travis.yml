@@ -4,5 +4,7 @@ jdk:
 language: java
 install:
   - ./gradlew wpi
+script:
+  - ./gradlew check build
 after_success:
   - ./gradlew aggregateScoverage coveralls
