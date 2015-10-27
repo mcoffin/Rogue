@@ -1,27 +1,33 @@
+def mavenCommand = "mvn"
+
+if (System.getProperty("os.name").startsWith("Windows")) {
+    mavenCommand = "mvn.cmd"
+}
+
 task installWPILibKar(type: Exec, dependsOn: ':wpilib:install') {
     workingDir 'wpilib-kar'
 
-    commandLine 'mvn', 'install'
+    commandLine mavenCommand, 'install'
 }
 
 task installGuiceFeatures(type: Exec) {
     workingDir 'guice'
 
-    commandLine 'mvn', 'install'
+    commandLine mavenCommand, 'install'
 }
 
 task installRogueWpiKar(type: Exec, dependsOn: ':rogue-wpi:install') {
     workingDir 'rogue-wpi'
 
-    commandLine 'mvn', 'install'
+    commandLine mavenCommand, 'install'
 }
 
 task dist(type: Exec, dependsOn: [installWPILibKar, installGuiceFeatures, installRogueWpiKar]) {
-    commandLine 'mvn', 'package'
+    commandLine mavenCommand, 'package'
 }
 
 task cleanMaven(type: Exec) {
-    commandLine 'mvn', 'clean'
+    commandLine mavenCommand, 'clean'
 }
 
 clean.dependsOn cleanMaven
