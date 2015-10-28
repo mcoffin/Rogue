@@ -192,6 +192,7 @@
                         <feature>kar</feature>
                         <feature>wpilib</feature>
                         <feature>rogue-wpi</feature>
+                        <feature>ssh</feature>
                         <!--<feature>webconsole</feature>-->
                     </bootFeatures>
                 </configuration>
