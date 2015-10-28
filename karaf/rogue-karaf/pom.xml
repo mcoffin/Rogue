@@ -181,15 +181,18 @@
                     <installedFeatures>
                         <feature>wrapper</feature>
                         <feature>wpilib</feature>
-			<feature>rogue-wpi</feature>
+                        <feature>rogue-wpi</feature>
                     </installedFeatures>
                     <bootFeatures>
+                        <feature>jaas</feature>
                         <feature>config</feature>
                         <feature>log</feature>
                         <feature>system</feature>
                         <feature>deployer</feature>
                         <feature>guice</feature>
-			<feature>wrap</feature>
+                        <feature>wrap</feature>
+                        <feature>kar</feature>
+                        <feature>webconsole</feature>
                     </bootFeatures>
                 </configuration>
             </plugin>
