@@ -180,11 +180,13 @@
                 <configuration>
                     <installedFeatures>
                         <feature>wrapper</feature>
+                    </installedFeatures>
+                    <startupFeatures>
                         <feature>wpilib</feature>
                         <feature>rogue-wpi</feature>
-                    </installedFeatures>
+                    </startupFeatures>
                     <bootFeatures>
-                        <feature>jaas</feature>
+                        <!--<feature>jaas</feature>-->
                         <feature>config</feature>
                         <feature>log</feature>
                         <feature>system</feature>
@@ -192,7 +194,7 @@
                         <feature>guice</feature>
                         <feature>wrap</feature>
                         <feature>kar</feature>
-                        <feature>webconsole</feature>
+                        <!--<feature>webconsole</feature>-->
                     </bootFeatures>
                 </configuration>
             </plugin>
