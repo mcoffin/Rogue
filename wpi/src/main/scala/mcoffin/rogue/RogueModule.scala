@@ -58,6 +58,9 @@ class RogueModule (val bundleContext: BundleContext) extends AbstractModule with
   }
 
   override def configure {
-    bundleContext.getAllServiceReferences(null, null).foreach(sr => bindServiceReference(sr))
+    val serviceReferences = bundleContext.getAllServiceReferences(null, null)
+    if (serviceReferences != null) {
+      serviceReferences.foreach(bindServiceReference(_))
+    }
   }
 }
