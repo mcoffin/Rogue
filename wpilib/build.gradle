@@ -19,6 +19,7 @@ dependencies {
 
 jar {
     manifest {
+        instruction 'Import-Package', '*, com.google.inject'
         instruction 'Bundle-Activator', 'mcoffin.rogue.wpilib.Activator'
     }
 }
@@ -30,8 +31,23 @@ shadowJar {
     }
 }
 
-task unzipShadowJar(type: Copy, dependsOn: 'shadowJar') {
-    from(zipTree(shadowJar.archivePath.getPath())) {
+def patcherProject = rootProject.project(":rogue-wpilib-patcher")
+def originalJar = shadowJar.archivePath
+def patchedJar = "$buildDir/tmp/patchedShadowJar.jar"
+
+patcherProject.run.dependsOn shadowJar
+patcherProject.run.args = ["$originalJar".toString(), patchedJar.toString()]
+
+task patchedShadowJar(type: Jar, dependsOn: patcherProject.run) {
+    from(zipTree(patchedJar))
+
+    manifest = shadowJar.manifest
+
+    classifier = "patched-all"
+}
+
+task unzipShadowJar(type: Copy, dependsOn: 'patchedShadowJar') {
+    from(zipTree(patchedShadowJar.archivePath.getPath())) {
         include("**/*.class")
     }
     into("$buildDir/tmp/osgiShadowJar-classes".toString())
@@ -59,30 +75,15 @@ task osgiShadowJar(type: Jar, dependsOn: 'unzipShadowJar') {
         }
     }
 
-    classifier = "all-osgi"
+    classifier = "patched-all-osgi"
 
-    from(zipTree(project.shadowJar.archivePath.getPath())) {
+    from(zipTree(patchedShadowJar.archivePath.getPath())) {
         exclude("META-INF/MANIFEST.MF")
     }
 }
 
-def patcherProject = rootProject.project(":rogue-wpilib-patcher")
-def originalJar = osgiShadowJar.archivePath
-def patchedJar = "$buildDir/tmp/patchedOsgiShadowJar.jar"
-
-patcherProject.run.dependsOn osgiShadowJar
-patcherProject.run.args = ["$originalJar".toString(), patchedJar.toString()]
-
-task patchedOsgiShadowJar(type: Jar, dependsOn: patcherProject.run) {
-    from(zipTree(patchedJar))
-
-    manifest = osgiShadowJar.manifest
-
-    classifier = "patched-all-osgi"
-}
-
 artifacts {
-    archives patchedOsgiShadowJar
+    archives osgiShadowJar
 }
 
 class OsgiOverride {
