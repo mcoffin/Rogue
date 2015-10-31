@@ -1,4 +1,5 @@
 include 'wpi', 'example-robot', 'wpilib-patcher', 'wpilib', 'karaf'
+
 project(":wpi").name = "rogue-wpi"
 project(":example-robot").name = "rogue-example-robot"
 project(":wpilib-patcher").name = "rogue-wpilib-patcher"
