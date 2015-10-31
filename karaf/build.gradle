@@ -1,0 +1,27 @@
+task installWPILibKar(type: Exec, dependsOn: ':wpilib:install') {
+    workingDir 'wpilib-kar'
+
+    commandLine 'mvn', 'install'
+}
+
+task installGuiceFeatures(type: Exec) {
+    workingDir 'guice'
+
+    commandLine 'mvn', 'install'
+}
+
+task installRogueWpiKar(type: Exec, dependsOn: ':rogue-wpi:install') {
+    workingDir 'rogue-wpi'
+
+    commandLine 'mvn', 'install'
+}
+
+task dist(type: Exec, dependsOn: [installWPILibKar, installGuiceFeatures, installRogueWpiKar]) {
+    commandLine 'mvn', 'package'
+}
+
+task cleanMaven(type: Exec) {
+    commandLine 'mvn', 'clean'
+}
+
+clean.dependsOn cleanMaven
